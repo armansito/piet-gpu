@@ -4,7 +4,7 @@ use bytemuck::{Pod, Zeroable};
 use piet_scene::Scene;
 
 use crate::{
-    engine::{BufProxy, Recording},
+    engine::{BufProxy, DownloadBufUsage, Recording},
     shaders::{self, FullShaders, Shaders},
 };
 
@@ -47,7 +47,7 @@ fn size_to_words(byte_size: usize) -> u32 {
     (byte_size / std::mem::size_of::<u32>()) as u32
 }
 
-pub fn render(scene: &Scene, shaders: &Shaders) -> (Recording, BufProxy) {
+pub fn render(scene: &Scene, shaders: &Shaders, output_usage: DownloadBufUsage) -> (Recording, BufProxy) {
     let mut recording = Recording::default();
     let data = scene.data();
     let n_pathtag = data.tag_stream.len();
@@ -115,11 +115,11 @@ pub fn render(scene: &Scene, shaders: &Shaders) -> (Recording, BufProxy) {
         [config_buf, tiles_buf, segments_buf, out_buf],
     );
 
-    recording.download(out_buf);
+    recording.download(out_buf, output_usage);
     (recording, out_buf)
 }
 
-pub fn render_full(scene: &Scene, shaders: &FullShaders) -> (Recording, BufProxy) {
+pub fn render_full(scene: &Scene, shaders: &FullShaders, output_usage: DownloadBufUsage) -> (Recording, BufProxy) {
     let mut recording = Recording::default();
     let data = scene.data();
     let n_pathtag = data.tag_stream.len();
@@ -301,7 +301,7 @@ pub fn render_full(scene: &Scene, shaders: &FullShaders) -> (Recording, BufProxy
     );
 
     let download_buf = out_buf;
-    recording.download(download_buf);
+    recording.download(download_buf, output_usage);
     (recording, download_buf)
 }
 

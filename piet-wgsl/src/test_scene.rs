@@ -60,7 +60,7 @@ pub fn dump_scene_info(scene: &Scene) {
 
 pub fn render_svg(sb: &mut SceneBuilder, svg: &PicoSvg, print_stats: bool) {
     use crate::pico_svg::*;
-    let start = std::time::Instant::now();
+//    let start = std::time::Instant::now();
     for item in svg.items.iter() {
         match item {
             Item::Fill(fill) => {
@@ -83,9 +83,9 @@ pub fn render_svg(sb: &mut SceneBuilder, svg: &PicoSvg, print_stats: bool) {
             }
         }
     }
-    if print_stats {
-        println!("flattening and encoding time: {:?}", start.elapsed());
-    }
+  //  if print_stats {
+//        println!("flattening and encoding time: {:?}", start.elapsed());
+   // }
 }
 
 fn convert_bez_path<'a>(path: &'a BezPath) -> impl Iterator<Item = PathElement> + 'a + Clone {
