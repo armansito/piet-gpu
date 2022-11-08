@@ -41,8 +41,6 @@ async fn render_demo_scene(
     engine: &mut Engine,
     usage: DownloadBufUsage,
 ) -> Result<(Downloads, BufProxy), Box<dyn std::error::Error>> {
-    //let shaders = shaders::init_shaders(device, engine)?;
-    //let scene = test_scene::gen_test_scene();
     #[allow(unused)]
     let shaders = shaders::init_shaders(device, engine)?;
     let full_shaders = shaders::full_shaders(device, engine)?;
