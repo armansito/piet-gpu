@@ -63,7 +63,7 @@ fn read_color(cmd_ix: u32) -> CmdColor {
 }
 #endif
 
-let PIXELS_PER_THREAD = 4u;
+const PIXELS_PER_THREAD = 4u;
 
 fn fill_path(tile: Tile, xy: vec2<f32>) -> array<f32, PIXELS_PER_THREAD> {
     var area: array<f32, PIXELS_PER_THREAD>;

@@ -38,7 +38,7 @@ var<storage, read_write> draw_monoid: array<DrawMonoid>;
 @group(0) @binding(5)
 var<storage, read_write> info: array<u32>;
 
-let WG_SIZE = 256u;
+const WG_SIZE = 256u;
 
 // Possibly dedup?
 struct Transform {

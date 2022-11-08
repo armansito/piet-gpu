@@ -67,12 +67,12 @@ struct SubdivResult {
     a2: f32,
 }
 
-let D = 0.67;
+const D = 0.67;
 fn approx_parabola_integral(x: f32) -> f32 {
     return x * inverseSqrt(sqrt(1.0 - D + (D * D * D * D + 0.25 * x * x)));
 }
 
-let B = 0.39;
+const B = 0.39;
 fn approx_parabola_inv_integral(x: f32) -> f32 {
     return x * sqrt(1.0 - B + (B * B + 0.5 * x * x));
 }
@@ -121,7 +121,7 @@ fn alloc_segment() -> u32 {
 }
 #endif
 
-let MAX_QUADS = 16u;
+const MAX_QUADS = 16u;
 
 @compute @workgroup_size(256)
 fn main(
