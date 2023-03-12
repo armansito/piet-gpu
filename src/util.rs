@@ -39,10 +39,12 @@ pub struct DeviceHandle {
 
 impl RenderContext {
     pub fn new() -> Result<Self> {
-        let instance = Instance::new(wgpu::InstanceDescriptor {
+        let instance = Instance::new(wgpu::Backends::PRIMARY);
+        /*
+            wgpu::InstanceDescriptor {
             backends: wgpu::Backends::PRIMARY,
             dx12_shader_compiler: wgpu::Dx12Compiler::Fxc,
-        });
+        });*/
         Ok(Self {
             instance,
             devices: Vec::new(),
@@ -54,16 +56,17 @@ impl RenderContext {
     where
         W: HasRawWindowHandle + HasRawDisplayHandle,
     {
-        let surface = unsafe { self.instance.create_surface(window) }.unwrap();
+        let surface = unsafe { self.instance.create_surface(window) }; //.unwrap();
         let dev_id = self.device(Some(&surface)).await.unwrap();
 
         let device_handle = &self.devices[dev_id];
-        let capabilities = surface.get_capabilities(&device_handle.adapter);
+        let format = TextureFormat::Bgra8Unorm;
+        /*let capabilities = surface.get_capabilities(&device_handle.adapter);
         let format = capabilities
             .formats
             .into_iter()
             .find(|it| matches!(it, TextureFormat::Rgba8Unorm | TextureFormat::Bgra8Unorm))
-            .expect("surface should support Rgba8Unorm or Bgra8Unorm");
+            .expect("surface should support Rgba8Unorm or Bgra8Unorm");*/
 
         let config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
@@ -72,7 +75,7 @@ impl RenderContext {
             height,
             present_mode: wgpu::PresentMode::Fifo,
             alpha_mode: wgpu::CompositeAlphaMode::Auto,
-            view_formats: vec![],
+            //view_formats: vec![],
         };
         surface.configure(&self.devices[dev_id].device, &config);
         RenderSurface {

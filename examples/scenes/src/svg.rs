@@ -1,14 +1,13 @@
 use std::{
     fs::read_dir,
     path::{Path, PathBuf},
-    time::Instant,
 };
 
 use anyhow::{Ok, Result};
 use vello::{kurbo::Vec2, SceneBuilder, SceneFragment};
 use vello_svg::usvg;
 
-use crate::{ExampleScene, SceneParams, SceneSet};
+use crate::{time::Instant, ExampleScene, SceneParams, SceneSet};
 
 pub fn scene_from_files(files: &[PathBuf]) -> Result<SceneSet> {
     scene_from_files_inner(files, || ())

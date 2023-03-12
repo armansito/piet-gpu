@@ -20,3 +20,6 @@ clap = { workspace = true, features = ["derive"] }
 byte-unit = "4.0"
 dialoguer = "0.10"
 ureq = "2.6"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2.84"

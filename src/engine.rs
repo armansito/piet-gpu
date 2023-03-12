@@ -293,7 +293,7 @@ impl Engine {
                         dimension: wgpu::TextureDimension::D2,
                         usage: TextureUsages::TEXTURE_BINDING | TextureUsages::COPY_DST,
                         format,
-                        view_formats: &[],
+                        //view_formats: &[],
                     });
                     let texture_view = texture.create_view(&wgpu::TextureViewDescriptor {
                         label: None,
@@ -310,7 +310,9 @@ impl Engine {
                             buffer: &buf,
                             layout: wgpu::ImageDataLayout {
                                 offset: 0,
-                                bytes_per_row: NonZeroU32::new(image_proxy.width * 4),
+                                bytes_per_row: Some(
+                                    NonZeroU32::new(image_proxy.width * 4).unwrap(),
+                                ),
                                 rows_per_image: None,
                             },
                         },
@@ -647,7 +649,7 @@ impl BindMap {
                             dimension: wgpu::TextureDimension::D2,
                             usage: TextureUsages::TEXTURE_BINDING | TextureUsages::COPY_DST,
                             format,
-                            view_formats: &[],
+                            //view_formats: &[],
                         });
                         let texture_view = texture.create_view(&wgpu::TextureViewDescriptor {
                             label: None,

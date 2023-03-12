@@ -15,11 +15,10 @@
 // Also licensed under MIT license, at your choice.
 
 use std::collections::HashSet;
-use std::time::Instant;
 
 use anyhow::Result;
 use clap::{CommandFactory, Parser};
-use scenes::{SceneParams, SceneSet, SimpleText};
+use scenes::{time::Instant, SceneParams, SceneSet, SimpleText};
 use vello::peniko::Color;
 use vello::util::RenderSurface;
 use vello::{

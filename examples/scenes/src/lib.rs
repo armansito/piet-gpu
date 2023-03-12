@@ -2,6 +2,7 @@ pub mod download;
 mod simple_text;
 mod svg;
 mod test_scenes;
+pub mod time;
 use std::path::PathBuf;
 
 use anyhow::{anyhow, Result};
