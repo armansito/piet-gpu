@@ -5,6 +5,9 @@ edition = "2021"
 
 [dependencies]
 bytemuck = { workspace = true }
-fello = { workspace = true }
+fello = { workspace = true, optional = true }
 peniko = { workspace = true }
 guillotiere = "0.6.2"
+
+[features]
+text = [ "fello" ]

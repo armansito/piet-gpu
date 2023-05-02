@@ -2,12 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
 use super::{
-    resolve::Patch, DrawColor, DrawImage, DrawLinearGradient, DrawRadialGradient, DrawTag, Glyph,
-    GlyphRun, PathEncoder, PathTag, Transform,
+    resolve::Patch, DrawColor, DrawImage, DrawLinearGradient, DrawRadialGradient, DrawTag,
+    PathEncoder, PathTag, Transform,
 };
 
-use fello::NormalizedCoord;
 use peniko::{kurbo::Shape, BlendMode, BrushRef, ColorStop, Extend, GradientKind, Image};
+
+#[cfg(feature = "text")]
+use {
+    super::{Glyph, GlyphRun},
+    fello::NormalizedCoord,
+};
 
 /// Encoded data streams for a scene.
 #[derive(Clone, Default)]
@@ -29,9 +34,12 @@ pub struct Encoding {
     /// The line width stream.
     pub linewidths: Vec<f32>,
     /// Positioned glyph buffer.
+    #[cfg(feature = "text")]
     pub glyphs: Vec<Glyph>,
     /// Sequences of glyphs.
+    #[cfg(feature = "text")]
     pub glyph_runs: Vec<GlyphRun>,
+    #[cfg(feature = "text")]
     /// Normalized coordinate buffer for variable fonts.
     pub normalized_coords: Vec<NormalizedCoord>,
     /// Number of encoded paths.
@@ -63,9 +71,12 @@ impl Encoding {
         self.linewidths.clear();
         self.draw_data.clear();
         self.draw_tags.clear();
-        self.glyphs.clear();
-        self.glyph_runs.clear();
-        self.normalized_coords.clear();
+        #[cfg(feature = "text")]
+        {
+            self.glyphs.clear();
+            self.glyph_runs.clear();
+            self.normalized_coords.clear();
+        }
         self.n_paths = 0;
         self.n_path_segments = 0;
         self.n_clips = 0;
@@ -81,29 +92,35 @@ impl Encoding {
     /// Appends another encoding to this one with an optional transform.
     pub fn append(&mut self, other: &Self, transform: &Option<Transform>) {
         let stops_base = self.color_stops.len();
+        #[cfg(feature = "text")]
         let glyph_runs_base = self.glyph_runs.len();
+        #[cfg(feature = "text")]
         let glyphs_base = self.glyphs.len();
+        #[cfg(feature = "text")]
         let coords_base = self.normalized_coords.len();
         let offsets = self.stream_offsets();
         self.path_tags.extend_from_slice(&other.path_tags);
         self.path_data.extend_from_slice(&other.path_data);
         self.draw_tags.extend_from_slice(&other.draw_tags);
         self.draw_data.extend_from_slice(&other.draw_data);
-        self.glyphs.extend_from_slice(&other.glyphs);
-        self.normalized_coords
-            .extend_from_slice(&other.normalized_coords);
-        self.glyph_runs
-            .extend(other.glyph_runs.iter().cloned().map(|mut run| {
-                run.glyphs.start += glyphs_base;
-                run.normalized_coords.start += coords_base;
-                run.stream_offsets.path_tags += offsets.path_tags;
-                run.stream_offsets.path_data += offsets.path_data;
-                run.stream_offsets.draw_tags += offsets.draw_tags;
-                run.stream_offsets.draw_data += offsets.draw_data;
-                run.stream_offsets.transforms += offsets.transforms;
-                run.stream_offsets.linewidths += offsets.linewidths;
-                run
-            }));
+        #[cfg(feature = "text")]
+        {
+            self.glyphs.extend_from_slice(&other.glyphs);
+            self.normalized_coords
+                .extend_from_slice(&other.normalized_coords);
+            self.glyph_runs
+                .extend(other.glyph_runs.iter().cloned().map(|mut run| {
+                    run.glyphs.start += glyphs_base;
+                    run.normalized_coords.start += coords_base;
+                    run.stream_offsets.path_tags += offsets.path_tags;
+                    run.stream_offsets.path_data += offsets.path_data;
+                    run.stream_offsets.draw_tags += offsets.draw_tags;
+                    run.stream_offsets.draw_data += offsets.draw_data;
+                    run.stream_offsets.transforms += offsets.transforms;
+                    run.stream_offsets.linewidths += offsets.linewidths;
+                    run
+                }));
+        }
         self.n_paths += other.n_paths;
         self.n_path_segments += other.n_path_segments;
         self.n_clips += other.n_clips;
@@ -120,6 +137,7 @@ impl Encoding {
                         stops,
                     }
                 }
+                #[cfg(feature = "text")]
                 Patch::GlyphRun { index } => Patch::GlyphRun {
                     index: index + glyph_runs_base,
                 },
@@ -135,6 +153,7 @@ impl Encoding {
         if let Some(transform) = *transform {
             self.transforms
                 .extend(other.transforms.iter().map(|x| transform * *x));
+            #[cfg(feature = "text")]
             for run in &mut self.glyph_runs[glyph_runs_base..] {
                 run.transform = transform * run.transform;
             }

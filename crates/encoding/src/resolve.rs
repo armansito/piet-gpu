@@ -7,11 +7,13 @@ use bytemuck::{Pod, Zeroable};
 use peniko::Image;
 
 use super::{
-    glyph_cache::{CachedRange, GlyphCache, GlyphKey},
     image_cache::{ImageCache, Images},
     ramp_cache::{RampCache, Ramps},
     DrawTag, Encoding, PathTag, StreamOffsets, Transform,
 };
+
+#[cfg(feature = "text") ]
+use super::glyph_cache::{CachedRange, GlyphCache, GlyphKey};
 
 /// Layout of a packed encoding.
 #[derive(Clone, Copy, Debug, Default, Zeroable, Pod)]
@@ -103,8 +105,11 @@ impl Layout {
 /// Resolver for late bound resources.
 #[derive(Default)]
 pub struct Resolver {
+    #[cfg(feature = "text")]
     glyph_cache: GlyphCache,
+    #[cfg(feature = "text")]
     glyph_ranges: Vec<CachedRange>,
+    #[cfg(feature = "text")]
     glyph_cx: fello::scale::Context,
     ramp_cache: RampCache,
     image_cache: ImageCache,
@@ -153,6 +158,7 @@ impl Resolver {
         {
             let mut pos = 0;
             let stream = &encoding.path_tags;
+            #[cfg(feature = "text")]
             for patch in &self.patches {
                 if let ResolvedPatch::GlyphRun { index, glyphs, .. } = patch {
                     layout.n_paths += 1;
@@ -183,6 +189,7 @@ impl Resolver {
         {
             let mut pos = 0;
             let stream = &encoding.path_data;
+            #[cfg(feature = "text")]
             for patch in &self.patches {
                 if let ResolvedPatch::GlyphRun { index, glyphs, .. } = patch {
                     let stream_offset = encoding.glyph_runs[*index].stream_offsets.path_data;
@@ -228,6 +235,7 @@ impl Resolver {
                         data.extend_from_slice(bytemuck::bytes_of(ramp_id));
                         pos = *draw_data_offset + 4;
                     }
+                    #[cfg(feature = "text")]
                     ResolvedPatch::GlyphRun { .. } => {}
                     ResolvedPatch::Image {
                         index,
@@ -260,6 +268,7 @@ impl Resolver {
         {
             let mut pos = 0;
             let stream = &encoding.transforms;
+            #[cfg(feature = "text")]
             for patch in &self.patches {
                 if let ResolvedPatch::GlyphRun {
                     index,
@@ -304,6 +313,7 @@ impl Resolver {
         {
             let mut pos = 0;
             let stream = &encoding.linewidths;
+            #[cfg(feature = "text")]
             for patch in &self.patches {
                 if let ResolvedPatch::GlyphRun { index, glyphs, .. } = patch {
                     let stream_offset = encoding.glyph_runs[*index].stream_offsets.linewidths;
@@ -329,7 +339,9 @@ impl Resolver {
 
     fn resolve_patches(&mut self, encoding: &Encoding) -> StreamOffsets {
         self.ramp_cache.advance();
+        #[cfg(feature = "text")]
         self.glyph_cache.clear();
+        #[cfg(feature = "text")]
         self.glyph_ranges.clear();
         self.image_cache.clear();
         self.pending_images.clear();
@@ -347,6 +359,7 @@ impl Resolver {
                         ramp_id,
                     });
                 }
+                #[cfg(feature = "text")]
                 Patch::GlyphRun { index } => {
                     let mut run_sizes = StreamOffsets::default();
                     let run = &encoding.glyph_runs[*index];
@@ -473,6 +486,7 @@ pub enum Patch {
         /// Range of the gradient stops in the resource set.
         stops: Range<usize>,
     },
+    #[cfg(feature = "text")]
     /// Glyph run resource.
     GlyphRun {
         /// Index in the glyph run buffer.
@@ -502,6 +516,7 @@ enum ResolvedPatch {
         /// Resolved ramp index.
         ramp_id: u32,
     },
+    #[cfg(feature = "text")]
     GlyphRun {
         /// Index of the original glyph run in the encoding.
         index: usize,

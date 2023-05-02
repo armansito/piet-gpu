@@ -8,7 +8,9 @@ mod clip;
 mod config;
 mod draw;
 mod encoding;
+#[cfg(feature = "text")]
 mod glyph;
+#[cfg(feature = "text")]
 mod glyph_cache;
 mod image_cache;
 mod math;
@@ -28,6 +30,7 @@ pub use draw::{
     DrawRadialGradient, DrawTag,
 };
 pub use encoding::{Encoding, StreamOffsets};
+#[cfg(feature = "text")]
 pub use glyph::{Glyph, GlyphRun};
 pub use math::Transform;
 pub use monoid::Monoid;
